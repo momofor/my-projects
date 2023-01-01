@@ -10,6 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (a, b, c) = (a.parse()?, b.parse()?, c.parse()?);
     let solutions = solve_2nd_degree_polynomial(a, b, c)?;
     println!("x_1: {}; x_2: {}", solutions[0], solutions[1]);
+
     Ok(())
 }
 

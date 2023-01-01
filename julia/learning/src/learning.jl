@@ -1,16 +1,10 @@
-# Using the derivation rule: d(x^n) = n*x^-1
-
-function derivative_of_thing(x, power)
-    return power * x^power - 1
-end
-
 input = readline()
-captures = match(r"^(\d)\^([0-9])$", input).captures
-x = captures[1]
-y = parse(Int64, captures[2])
-y_1 = y - 1
+regexu = r"(\d) (\d) (\d) (\d) (\d) (\d)"
+captures = match(regexu, input)
 
-println("x=", x, ";y=", y)
-println("d(", x, "^", y, ") = ", y, "*", x, "^", y - 1)
+(a_1, a_2, k_1) = (parse(Int,captures[1]), parse(Int,captures[2]), parse(Int,captures[3]))
+(b_1, b_2, k_2) = (parse(Int,captures[4]), parse(Int,captures[5]), parse(Int,captures[6]))
 
-println(derivative_of_thing(5, 2))
+c = [a_1 a_2 k_1
+    b_1 b_2 k_2]
+println(c)
