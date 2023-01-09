@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 factorial = "0.3.0"
+itertools = "0.10.5"
 regex = "1.7.0"
+thiserror = "1.0.38"
