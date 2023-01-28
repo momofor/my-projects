@@ -10,30 +10,13 @@ fn my_composition_method(num: (i32, i32)) -> i32 {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input)?;
-    let polynomial_to_solve =
-        Regex::new(r"(?x) (?P<a> \d+)x\^2[\+\-](?P<b> \d+)x[\+\-](?P<c> \d+)")?;
-    let caps = polynomial_to_solve.captures(input.as_str()).unwrap();
-
-    let (a, b, c) = (&caps["a"], &caps["b"], &caps["c"]);
-    let (a, b, c) = (a.parse()?, b.parse()?, c.parse()?);
-    let solutions = solve_2nd_degree_polynomial(a, b, c)?;
-    println!("x_1: {}; x_2: {}", solutions[0], solutions[1]);
-    let my_group = Group::new(
-        "My_group".to_string(),
-        0,
-        my_inverse,
-        my_composition_method,
-        vec![1, 2, 3, 4, 5, 5],
-    );
+    let my_group = Group::new(0, my_inverse, my_composition_method, vec![1, 2, 3, 4, 5, 5]);
     let (commutativity, inversability) = my_group.check_validity();
     println!("com:{commutativity}, inver:{inversability}");
 
     Ok(())
 }
 struct Group {
-    name: String,
     neuteural: i32,
     elements: Vec<i32>,
     inverse_method: fn(i32) -> i32,
@@ -73,14 +56,12 @@ impl Group {
         (is_commutative, is_inversable)
     }
     fn new(
-        name: String,
         neuteural: i32,
         inverse_method: fn(i32) -> i32,
         composition_method: fn((i32, i32)) -> i32,
         elements: Vec<i32>,
     ) -> Group {
         let new_group = Group {
-            name,
             neuteural,
             composition_method,
             inverse_method,
@@ -103,4 +84,18 @@ fn solve_2nd_degree_polynomial(a: f64, b: f64, c: f64) -> Result<Vec<f64>, Strin
             return Err("Not good".to_string());
         }
     }
+}
+
+fn _run_quadratic_solver() -> Result<(), Box<dyn std::error::Error>> {
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+    let polynomial_to_solve =
+        Regex::new(r"(?x)(?P<a> \d+)x\^2[\+\-](?P<b> \d+)x[\+\-](?P<c> \d+)")?;
+    let caps = polynomial_to_solve.captures(input.as_str()).unwrap();
+
+    let (a, b, c) = (&caps["a"], &caps["b"], &caps["c"]);
+    let (a, b, c) = (a.parse()?, b.parse()?, c.parse()?);
+    let solutions = solve_2nd_degree_polynomial(a, b, c)?;
+    println!("x_1: {}; x_2: {}", solutions[0], solutions[1]);
+    Ok(())
 }
