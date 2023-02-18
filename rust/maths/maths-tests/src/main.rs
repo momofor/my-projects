@@ -10,9 +10,19 @@ fn my_composition_method(num: (i32, i32)) -> i32 {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let my_group = Group::new(0, my_inverse, my_composition_method, vec![1, 2, 3, 4, 5, 5]);
-    let (commutativity, inversability) = my_group.check_validity();
-    println!("com:{commutativity}, inver:{inversability}");
+    // let my_group = Group::new(0, my_inverse, my_composition_method, vec![1, 2, 3, 4, 5, 5]);
+    // let (commutativity, inversability) = my_group.check_validity();
+    // println!("com:{commutativity}, inver:{inversability}");
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input)?;
+    let polynomial_to_solve =
+        Regex::new(r"(?x)(?P<a> \d+)x\^2[\+\-](?P<b> \d+)x[\+\-](?P<c> \d+)")?;
+    let caps = polynomial_to_solve.captures(input.as_str()).unwrap();
+
+    let (a, b, c) = (&caps["a"], &caps["b"], &caps["c"]);
+    let (a, b, c) = (a.parse()?, b.parse()?, c.parse()?);
+    let solutions = solve_2nd_degree_polynomial(a, b, c)?;
+    println!("x_1: {}; x_2: {}", solutions[0], solutions[1]);
 
     Ok(())
 }

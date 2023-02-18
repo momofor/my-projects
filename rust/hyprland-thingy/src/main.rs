@@ -1,22 +1,15 @@
-use hyprland::dispatch::*;
+use hyprland::dispatch::WorkspaceIdentifier;
+use hyprland::event_listener::EventListener;
 use hyprland::event_listener::LayoutEvent;
 use hyprland::shared::HResult;
-use hyprland::{dispatch::Dispatch, event_listener::EventListener, shared::WorkspaceType};
+use hyprland::shared::WorkspaceType;
 
 fn main() -> HResult<()> {
     let mut event_listener = EventListener::new();
-    event_listener.add_workspace_change_handler(|id| println!("workspace changed to {id:#?}"));
-    event_listener.add_workspace_change_handler(|id| {
-        if id == WorkspaceType::Regular('9'.to_string()) {
-            Dispatch::call(DispatchType::Workspace(WorkspaceIdentifierWithSpecial::Id(
-                2,
-            )))
-            .unwrap();
-        }
-    });
     let keyboard_handler = |layout_data: LayoutEvent| {
-        let noice = layout_data.0.splitn(2, ',').nth(1);
-        println!("{}", noice.unwrap());
+        // split the MF in half then take the second half
+        let layout_name = layout_data.0.splitn(2, ',').nth(1);
+        println!("{}", layout_name.unwrap());
     };
     event_listener.add_keyboard_layout_change_handler(keyboard_handler);
     event_listener.start_listener()
