@@ -45,3 +45,11 @@ testHaskell = print
 
 data WeirdType where
     Shape :: String -> WeirdType
+
+data Group a = Group
+    { name :: String
+    , inverse :: String
+    , elemennts :: [Int]
+    , composition :: (a -> a)
+    }
+    deriving (Show)

@@ -1,10 +1,11 @@
-input = readline()
-regexu = r"(\d) (\d) (\d) (\d) (\d) (\d)"
-captures = match(regexu, input)
+function initialise_model_weights(layer_dims, seed)
+    params = Dict()
 
-(a_1, a_2, k_1) = (parse(Int,captures[1]), parse(Int,captures[2]), parse(Int,captures[3]))
-(b_1, b_2, k_2) = (parse(Int,captures[4]), parse(Int,captures[5]), parse(Int,captures[6]))
+    # Build a dictionary of initialised weights and bias units
+    for l=2:length(layer_dims)
+        params[string("W_", (l-1))] = rand(StableRNG(seed), layer_dims[l], layer_dims[l-1]) * sqrt(2 / layer_dims[l-1])
+        params[string("b_", (l-1))] = zeros(layer_dims[l], 1)
+    end
 
-c = [a_1 a_2 k_1
-    b_1 b_2 k_2]
-println(c)
+    return params
+end
