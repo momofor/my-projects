@@ -63,9 +63,8 @@ async fn main() {
     let arduino = warp::get()
         .and(warp::path("arduino"))
         .and(warp::path::param::<String>())
-        .and(warp::path::end())
-        .and_then(arduino);
+        .and(warp::path::end());
     let routes = main.or(arduino);
 
-    warp::serve(routes).run(([192, 168, 1, 9], 3030)).await;
+    warp::serve(routes).run(([192, 168, 1, 13], 3030)).await;
 }
