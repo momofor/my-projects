@@ -24,8 +24,6 @@ fn main() {
     // println!("{:?}", two_sum(vec![3, 2, 4], 6));
     // let test_string = "IV".to_string();
     // println!("{}", roman_to_int(test_string));
-    let test_palindrome = Some(Box::new(ListNode::new(1)));
-    println!("{}", is_palindrome(test_palindrome));
 }
 impl ListNode {
     #[inline]
