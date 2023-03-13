@@ -2,7 +2,6 @@
 #![no_main]
 
 use arduino_hal::adc;
-use arduino_hal::simple_pwm::{IntoPwmPin, Prescaler, Timer2Pwm};
 use arduino_hal::{delay_ms, prelude::*};
 use panic_halt as _;
 
@@ -22,23 +21,28 @@ fn main() -> ! {
     ufmt::uwriteln!(&mut serial, "Ground: {}", gnd).void_unwrap();
     ufmt::uwriteln!(&mut serial, "Temperature: {}", tmp).void_unwrap();
 
-    let a3 = pins.a3.into_analog_input(&mut adc);
-    let timer2 = Timer2Pwm::new(dp.TC2, Prescaler::Prescale64);
-    let mut led = pins.d11.into_output().into_pwm(&timer2);
-    let mut state: u8 = 0;
+    let pin = pins.a3.into_analog_input(&mut adc);
+    let mut led = pins.d11.into_output();
+
+    let tc1 = dp.TC1;
+    tc1.tccr1a
+        .write(|w| w.wgm1().bits(0b01).com1a().match_clear());
+    tc1.tccr1b
+        .write(|w| w.wgm1().bits(0b01).cs1().prescale_64());
+    let pwm_pin = pins.d9.into_output();
 
     loop {
-        let voltage = nb::block!(adc.read_nonblocking(&a3)).void_unwrap();
-        if voltage != 0 && state == 0 {
-            ufmt::uwriteln!(&mut serial, "Light is on and voltage is {}", &voltage).void_unwrap();
-            state = 1;
-            led.set_duty(voltage as u8 * 10);
-            led.enable();
-        } else if voltage == 0 && state == 1 {
-            ufmt::uwriteln!(&mut serial, "Light is now off").void_unwrap();
-            state = 0;
-            led.disable();
+        let value = pin.analog_read(&mut adc);
+        for duty in 0u8..=255u8 {
+            ufmt::uwrite!(&mut serial, "Duty: {}", duty).void_unwrap();
+            tc1.ocr1a.write(|w| unsafe { w.bits(duty as u16) });
         }
-        delay_ms(100);
+        if value > 0 {
+            led.set_low();
+        } else {
+            led.set_high();
+        }
+        ufmt::uwriteln!(&mut serial, "{}", value / 2).void_unwrap();
+        delay_ms(500);
     }
 }
