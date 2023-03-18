@@ -11,12 +11,13 @@ fn my_composition_method(num: (&i32, &i32)) -> i32 {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let test_vec = vec![1, 2, 3, 4, 5, 5];
     let my_group = Group::new(
         "My Group".to_string(),
         0,
         my_inverse,
         my_composition_method,
-        vec![1, 2, 3, 4, 5, 5],
+        test_vec,
     );
     let (commutativity, inversability) = my_group.check_validity();
     println!("com:{commutativity}, inver:{inversability}");
