@@ -10,7 +10,6 @@ def average(lst):
 
 with open("./test.csv", newline="") as csvfile:
     spamreader = csv.reader(csvfile)
-    list_of_elements = []
     for row in spamreader:
         # if type(row[1]) == "number":
         #     print(row[1])

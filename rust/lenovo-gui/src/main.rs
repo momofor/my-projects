@@ -1,31 +1,23 @@
 use eframe::egui;
 use egui::Color32;
-use nix::unistd::Uid;
 use std::{
-    io,
-    sync::{
-        mpsc::{channel, Receiver, Sender},
-        Arc, Mutex,
-    },
+    fs,
+    sync::mpsc::{channel, Receiver, Sender},
     thread,
 };
-use tokio::fs;
-use tracing::{info, instrument};
-use tracing_subscriber::{filter::LevelFilter, prelude::*};
 
 enum Device {
     Screen,
     Keyboard,
 }
 
-async fn change_state(state: u8, device: Device) {
+fn change_state(state: u8, device: Device) {
     match device {
         Device::Screen => {
             fs::write(
                 "/sys/class/backlight/intel_backlight/brightness",
                 state.to_string(),
             )
-            .await
             .expect("Cannot open file make sure to run as root");
         }
         Device::Keyboard => {
@@ -33,51 +25,35 @@ async fn change_state(state: u8, device: Device) {
                 "/sys/class/leds/tpacpi::kbd_backlight/brightness",
                 state.to_string(),
             )
-            .await
             .expect("Cannot open file make sure to run as root");
         }
     }
 }
 
-#[instrument]
-#[tokio::main]
-async fn start_tokio(rx: Receiver<(u8, u8)>) {
-    info!("started main tokio loop");
+fn start_event_loop(rx: Receiver<(u8, u8)>) {
     loop {
-        info!("listening to events");
         match rx.recv() {
             Ok(message) => match message {
                 (0, 1) | (0, 2) => {
-                    change_state(message.1, Device::Keyboard).await;
-                    info!("Turned on");
+                    change_state(message.1, Device::Keyboard);
                 }
                 (0, 0) => {
-                    change_state(message.1, Device::Keyboard).await;
-                    info!("Turned off");
+                    change_state(message.1, Device::Keyboard);
                 }
-                (1, brightness) => change_state(brightness, Device::Screen).await,
-                _ => tracing::error!("TF is this ?"),
+                (1, brightness) => change_state(brightness, Device::Screen),
+                _ => eprintln!("ERROR: IDK how to handle this"),
             },
             Err(err) => println!("failed at unpacking with error: {}", err),
         }
     }
 }
 
-#[instrument]
 fn main() {
-    if !Uid::effective().is_root() {
-        panic!("RUN AS ROOT!");
-    };
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::fmt::layer().with_filter(LevelFilter::INFO))
-        .init();
     let (tx, rx) = channel();
 
-    thread::spawn(move || start_tokio(rx));
+    thread::spawn(move || start_event_loop(rx));
 
-    info!("started second thread");
     let options = eframe::NativeOptions::default();
-    tracing::info!("starting stuff and eframe");
     eframe::run_native("MyApp", options, Box::new(|_cc| Box::new(MyApp::new(tx))));
 }
 

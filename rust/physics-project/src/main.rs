@@ -5,7 +5,7 @@ async fn main() {
     let mut x = 1.;
     let mut y = 1.;
     let mut velocity = 1.;
-    let acceleration = 1.01;
+    let acceleration = 1.0.1;
     loop {
         clear_background(GRAY);
         if x > 1920. || y > 1080. || x < 0. || y < 0. {
