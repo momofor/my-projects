@@ -1,15 +1,15 @@
 use regex::{self, Regex};
-pub fn _solve_2nd_degree_polynomial(a: f64, b: f64, c: f64) -> Result<Vec<f64>, String> {
+pub fn _solve_2nd_degree_polynomial<'a>(a: f64, b: f64, c: f64) -> Result<[f64; 2], &'a str> {
     let delta = b.powi(2) - 4. * a * c;
     match delta.is_sign_positive() && delta != 0. {
         true => {
-            let solutions: Vec<f64> = vec![
+            let solutions = [
                 (-b - delta.sqrt()) / (2. * a),
                 (-b + delta.sqrt()) / (2. * a),
             ];
             Ok(solutions)
         }
-        false => Err("Not good".to_string()),
+        false => Err("Not good"),
     }
 }
 

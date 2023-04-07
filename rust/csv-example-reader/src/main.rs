@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for result in rdr.deserialize::<Model>() {
         let record: Model = result?;
         println!(
-            "student name is : {}, their class is :{} and their grade is: {}",
+            "student name is: {}, their class is: {} and their grade is: {}",
             record.student_name, record.class, record.grade
         );
     }

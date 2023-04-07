@@ -1,17 +1,21 @@
-import csv
+# Import the necessary modules
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
-def average(lst):
-    avg = 0
-    for element in lst:
-        avg += element
-    return avg / len(lst)
+# Initialize the lists for X and Y
+data = pd.read_csv("./test.csv")
 
+df = pd.DataFrame(data)
 
-with open("./test.csv", newline="") as csvfile:
-    spamreader = csv.reader(csvfile)
-    for row in spamreader:
-        # if type(row[1]) == "number":
-        #     print(row[1])
-        print(type(row[1]))
-    # print(average(list_of_elements))
+X = list(df.iloc[:, 0])
+Y = list(df.iloc[:, 1])
+
+# Plot the data using bar() method
+plt.bar(X, Y, color="g")
+plt.title("Students over 11 Years")
+plt.xlabel("Years")
+plt.ylabel("Number of Students")
+
+# Show the plot
+plt.show()
